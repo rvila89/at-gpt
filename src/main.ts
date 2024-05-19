@@ -7,7 +7,6 @@ import {Request, Response, NextFunction} from 'express'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
-  // Middleware personalizado para habilitar CORS
   const allowCors = (req: Request, res: Response, next: NextFunction) => {
     res.setHeader('Access-Control-Allow-Credentials', 'true')
     res.setHeader('Access-Control-Allow-Origin', '*')
