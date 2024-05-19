@@ -17,10 +17,9 @@ import {Idioma} from './entities/idioma.entity'
 import {createLanguageUseCase} from './use-cases/create-language-use-case'
 import {assignLanguageToPersonUseCase} from './use-cases/assign-language-use-case'
 import * as Handlebars from 'handlebars'
-import chromium from 'chrome-aws-lambda'
-import puppeteer from 'puppeteer-core'
 import {readFileSync} from 'fs'
 import {join} from 'path'
+import {PDFDocument, rgb, StandardFonts} from 'pdf-lib'
 
 @Injectable()
 export class AtGptDatabaseService implements OnModuleInit {
@@ -124,30 +123,28 @@ export class AtGptDatabaseService implements OnModuleInit {
     }
 
     const html = template(data)
-    let browser = null
 
-    try {
-      browser = await puppeteer.launch({
-        args: chromium.args,
-        executablePath: await chromium.executablePath,
-        headless: chromium.headless
+    // Generar PDF usando pdf-lib
+    const pdfDoc = await PDFDocument.create()
+    const page = pdfDoc.addPage([600, 800])
+    const {height} = page.getSize()
+
+    const fontSize = 12
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
+    const lines = html.split('\n')
+
+    lines.forEach((line, index) => {
+      page.drawText(line, {
+        x: 50,
+        y: height - (index + 1) * fontSize * 1.5,
+        size: fontSize,
+        font: font,
+        color: rgb(0, 0, 0)
       })
+    })
 
-      const page = await browser.newPage()
-      await page.setContent(html)
-      const pdf = await page.pdf({format: 'A4'})
+    const pdfBytes = await pdfDoc.save()
 
-      return pdf
-    } catch (error) {
-      console.log('error', error)
-      throw new HttpException(
-        'Error generating PDF',
-        HttpStatus.INTERNAL_SERVER_ERROR
-      )
-    } finally {
-      if (browser) {
-        await browser.close()
-      }
-    }
+    return Buffer.from(pdfBytes)
   }
 }
