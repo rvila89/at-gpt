@@ -19,7 +19,7 @@ import {assignLanguageToPersonUseCase} from './use-cases/assign-language-use-cas
 import * as Handlebars from 'handlebars'
 import {readFileSync} from 'fs'
 import {join} from 'path'
-import {PDFDocument, rgb, StandardFonts} from 'pdf-lib'
+import * as htmlPdf from 'html-pdf-node'
 
 @Injectable()
 export class AtGptDatabaseService implements OnModuleInit {
@@ -124,27 +124,19 @@ export class AtGptDatabaseService implements OnModuleInit {
 
     const html = template(data)
 
-    // Generar PDF usando pdf-lib
-    const pdfDoc = await PDFDocument.create()
-    const page = pdfDoc.addPage([600, 800])
-    const {height} = page.getSize()
+    const options = {format: 'A4'}
 
-    const fontSize = 12
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
-    const lines = html.split('\n')
+    const file = {content: html}
 
-    lines.forEach((line, index) => {
-      page.drawText(line, {
-        x: 50,
-        y: height - (index + 1) * fontSize * 1.5,
-        size: fontSize,
-        font: font,
-        color: rgb(0, 0, 0)
-      })
-    })
-
-    const pdfBytes = await pdfDoc.save()
-
-    return Buffer.from(pdfBytes)
+    try {
+      const pdfBuffer = await htmlPdf.generatePdf(file, options)
+      return pdfBuffer
+    } catch (error) {
+      console.log('error', error)
+      throw new HttpException(
+        'Error generating PDF',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      )
+    }
   }
 }
