@@ -12,8 +12,7 @@ async function bootstrap() {
     allowedHeaders: ['Accept', 'Content-Type'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     preflightContinue: false,
-    optionsSuccessStatus: 204,
-    credentials: true
+    optionsSuccessStatus: 204
   })
   //Middleware personalizado para habilitar CORS
   const allowCors = (req: Request, res: Response, next: NextFunction) => {
@@ -22,7 +21,7 @@ async function bootstrap() {
     if (allowedOrigins.includes(origin)) {
       res.setHeader('Access-Control-Allow-Origin', origin)
     }
-    res.setHeader('Access-Control-Allow-Credentials', 'true')
+    // res.setHeader('Access-Control-Allow-Credentials', 'true')
     res.setHeader(
       'Access-Control-Allow-Methods',
       'GET,OPTIONS,PATCH,DELETE,POST,PUT'
