@@ -1,14 +1,7 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "src/main.ts",
-      "use": "@vercel/node"
-    }
-  ],
   "headers": [
     {
-      "source": "/at-gpt/(.*)",
+      "source": "/(.*)",
       "headers": [
         {"key": "Access-Control-Allow-Credentials", "value": "true"},
         {
