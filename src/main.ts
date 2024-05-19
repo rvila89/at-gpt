@@ -7,17 +7,14 @@ import {NextFunction, Response} from 'express'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   app.enableCors({
-    origin: 'https://at-gpt-frontend.vercel.app',
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Accept'
   })
 
   // Middleware para verificar cabeceras CORS
   app.use((req: Request, res: Response, next: NextFunction) => {
-    res.header(
-      'Access-Control-Allow-Origin',
-      'https://at-gpt-frontend.vercel.app'
-    )
+    res.header('Access-Control-Allow-Origin', '*')
     res.header(
       'Access-Control-Allow-Methods',
       'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS'
