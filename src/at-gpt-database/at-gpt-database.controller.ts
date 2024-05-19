@@ -14,6 +14,7 @@ import {diskStorage} from 'multer'
 import {Persona} from './entities/persona.entity'
 import type {Response} from 'express'
 import {join} from 'path'
+import * as fs from 'fs'
 
 @ApiTags('AI')
 @Controller('at-gpt')
@@ -29,6 +30,7 @@ export class AtGptDatabaseController {
       storage: diskStorage({
         destination: (req, file, cb) => {
           const uploadPath = join('/tmp', 'generated', 'uploads', 'cv')
+          fs.mkdirSync(uploadPath, {recursive: true})
           cb(null, uploadPath)
         },
         filename: (req, file, callback) => {
