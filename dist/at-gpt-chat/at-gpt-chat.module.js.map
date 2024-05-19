@@ -1,1 +1,0 @@
-{"version":3,"file":"at-gpt-chat.module.js","sourceRoot":"","sources":["../../src/at-gpt-chat/at-gpt-chat.module.ts"],"names":[],"mappings":";;;;;;;;;AAAA,2CAAqC;AACrC,qEAA4D;AAC5D,+DAAsD;AAM/C,IAAM,eAAe,GAArB,MAAM,eAAe;CAAG,CAAA;AAAlB,0CAAe;0BAAf,eAAe;IAJ3B,IAAA,eAAM,EAAC;QACN,WAAW,EAAE,CAAC,4CAAmB,CAAC;QAClC,SAAS,EAAE,CAAC,sCAAgB,CAAC;KAC9B,CAAC;GACW,eAAe,CAAG"}
