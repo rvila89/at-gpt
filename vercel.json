@@ -1,7 +1,7 @@
 {
   "builds": [
     {
-      "src": "src/main.ts",
+      "src": "dist/main.ts",
       "use": "@vercel/node",
       "config": {
         "outputDirectory": "dist"
@@ -11,7 +11,7 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "app.js",
+      "dest": "dist/main.js",
       "headers": {
         "Access-Control-Allow-Credentials": "true",
         "Access-Control-Allow-Origin": "https://at-gpt-frontend.vercel.app",
