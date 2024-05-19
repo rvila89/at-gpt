@@ -1,7 +1,7 @@
 import {
+  Injectable,
   HttpException,
   HttpStatus,
-  Injectable,
   OnModuleInit
 } from '@nestjs/common'
 import {ChatOpenAI} from '@langchain/openai'
@@ -18,13 +18,14 @@ import {createLanguageUseCase} from './use-cases/create-language-use-case'
 import {assignLanguageToPersonUseCase} from './use-cases/assign-language-use-case'
 import * as Handlebars from 'handlebars'
 import chromium from 'chrome-aws-lambda'
-import * as puppeteer from 'puppeteer-core'
+import puppeteer from 'puppeteer-core'
 import {readFileSync} from 'fs'
 import {join} from 'path'
 
 @Injectable()
 export class AtGptDatabaseService implements OnModuleInit {
   private llm: ChatOpenAI
+
   constructor(
     @InjectRepository(Persona) private personaRepository: Repository<Persona>,
     @InjectRepository(Skill) private skillRepository: Repository<Skill>,
@@ -35,7 +36,7 @@ export class AtGptDatabaseService implements OnModuleInit {
     this.llm = new ChatOpenAI({
       openAIApiKey: process.env.OPENAI_API_KEY,
       temperature: 0,
-      modelName: 'gpt-4o'
+      modelName: 'gpt-4'
     })
   }
 
@@ -102,7 +103,6 @@ export class AtGptDatabaseService implements OnModuleInit {
       join(__dirname, 'template-cv.hbs'),
       'utf8'
     )
-
     const template = Handlebars.compile(templateHtml)
 
     const data = {
@@ -122,11 +122,11 @@ export class AtGptDatabaseService implements OnModuleInit {
       skills: persona.skills.map((skill) => skill.nombre),
       idiomas: persona.idiomas.map((idioma) => idioma.idioma)
     }
+
     const html = template(data)
     let browser = null
 
     try {
-      // Lanzar el navegador usando chrome-aws-lambda
       browser = await puppeteer.launch({
         args: chromium.args,
         executablePath: await chromium.executablePath,
@@ -140,6 +140,10 @@ export class AtGptDatabaseService implements OnModuleInit {
       return pdf
     } catch (error) {
       console.log('error', error)
+      throw new HttpException(
+        'Error generating PDF',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      )
     } finally {
       if (browser) {
         await browser.close()
