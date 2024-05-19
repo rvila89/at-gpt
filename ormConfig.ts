@@ -6,7 +6,7 @@ import {Skill} from 'src/at-gpt-database/entities/skill.entity'
 
 export const ormConfig: TypeOrmModuleOptions = {
   type: 'sqlite',
-  database: './data/atdb03_bck.db',
+  database: './src/data/atdb03_bck.db',
   entities: [Persona, Educacion, Idioma, Skill],
   synchronize: true
 }
