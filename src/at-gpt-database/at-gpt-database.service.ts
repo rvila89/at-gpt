@@ -19,7 +19,7 @@ import {assignLanguageToPersonUseCase} from './use-cases/assign-language-use-cas
 import * as Handlebars from 'handlebars'
 import {readFileSync} from 'fs'
 import {join} from 'path'
-import PdfPrinter from 'pdfmake'
+import * as htmlPdf from 'html-pdf-node'
 
 @Injectable()
 export class AtGptDatabaseService implements OnModuleInit {
@@ -123,59 +123,18 @@ export class AtGptDatabaseService implements OnModuleInit {
     }
 
     const html = template(data)
+    const file = {content: html}
+    const options = {format: 'A4'}
 
-    const fonts = {
-      Roboto: {
-        normal: 'node_modules/pdfmake/build/vfs_fonts.js',
-        bold: 'node_modules/pdfmake/build/vfs_fonts.js',
-        italics: 'node_modules/pdfmake/build/vfs_fonts.js',
-        bolditalics: 'node_modules/pdfmake/build/vfs_fonts.js'
-      }
+    try {
+      const pdfBuffer = await htmlPdf.generatePdf(file, options)
+      return pdfBuffer
+    } catch (error) {
+      console.log('error', error)
+      throw new HttpException(
+        'Error generating PDF',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      )
     }
-
-    const printer = new PdfPrinter(fonts)
-    const docDefinition = {
-      content: [
-        {text: `Nombre: ${data.nombre}`, fontSize: 15, bold: true},
-        {text: `Apellido: ${data.apellido}`, fontSize: 15, bold: true},
-        {text: `Email: ${data.email}`, fontSize: 15},
-        {text: `Iniciales: ${data.initials}`, fontSize: 15},
-        {text: 'Resumen Ejecutivo', style: 'header'},
-        {text: data.resumen, fontSize: 12},
-        {text: 'Experiencia Profesional', style: 'header'},
-        ...data.experiencia.map((exp) => [
-          {text: `Cliente: ${exp.cliente}`, bold: true},
-          {text: `Proyecto: ${exp.proyecto}`},
-          {text: `Funciones: ${exp.funciones}`},
-          {text: `Herramientas: ${exp.herramientas}`}
-        ]),
-        {text: 'Idiomas', style: 'header'},
-        ...data.idiomas.map((idioma) => ({text: idioma, fontSize: 12})),
-        {text: 'Conocimientos Informáticos', style: 'header'},
-        ...data.skills.map((skill) => ({text: skill, fontSize: 12}))
-      ],
-      styles: {
-        header: {
-          fontSize: 18,
-          bold: true,
-          margin: [0, 20, 0, 10]
-        }
-      }
-    }
-
-    const pdfDoc = printer.createPdfKitDocument(docDefinition)
-    const chunks = []
-    return new Promise<Buffer>((resolve, reject) => {
-      pdfDoc.on('data', (chunk) => {
-        chunks.push(chunk)
-      })
-      pdfDoc.on('end', () => {
-        resolve(Buffer.concat(chunks))
-      })
-      pdfDoc.on('error', (err) => {
-        reject(err)
-      })
-      pdfDoc.end()
-    })
   }
 }
