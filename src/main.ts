@@ -5,6 +5,11 @@ import * as bodyParser from 'body-parser'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
+  app.enableCors({
+    origin: 'https://at-gpt-frontend.vercel.app',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Accept'
+  })
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -15,11 +20,6 @@ async function bootstrap() {
   // the next two lines did the trick
   app.use(bodyParser.json({limit: '50mb'}))
   app.use(bodyParser.urlencoded({limit: '50mb', extended: true}))
-  app.enableCors({
-    origin: 'https://at-gpt-frontend.vercel.app',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type, Accept'
-  })
 
   await app.listen(3000)
 }
