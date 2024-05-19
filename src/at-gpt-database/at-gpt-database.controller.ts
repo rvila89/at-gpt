@@ -61,6 +61,7 @@ export class AtGptDatabaseController {
       'Content-Disposition': 'attachment; filename=cv.pdf',
       'Content-Length': pdfBuffer.length
     })
+    console.log('pdf', pdfBuffer)
     res.end(pdfBuffer)
   }
 }

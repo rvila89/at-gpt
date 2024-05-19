@@ -97,13 +97,11 @@ export class AtGptDatabaseService implements OnModuleInit {
       throw new Error('Persona not found')
     }
 
-    console.log('persona', persona)
-
     const templateHtml = readFileSync(
       join(__dirname, 'template-cv.hbs'),
       'utf8'
     )
-    console.log('template', templateHtml)
+
     const template = Handlebars.compile(templateHtml)
 
     const data = {
