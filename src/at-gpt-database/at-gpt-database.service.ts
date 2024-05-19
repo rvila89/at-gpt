@@ -19,7 +19,7 @@ import {assignLanguageToPersonUseCase} from './use-cases/assign-language-use-cas
 import * as Handlebars from 'handlebars'
 import {readFileSync} from 'fs'
 import {join} from 'path'
-import * as htmlPdf from 'html-pdf-node'
+import puppeteer from 'puppeteer'
 
 @Injectable()
 export class AtGptDatabaseService implements OnModuleInit {
@@ -124,19 +124,28 @@ export class AtGptDatabaseService implements OnModuleInit {
 
     const html = template(data)
 
-    const options = {format: 'A4'}
-
-    const file = {content: html}
+    let browser = null
 
     try {
-      const pdfBuffer = await htmlPdf.generatePdf(file, options)
-      return pdfBuffer
+      browser = await puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+      })
+
+      const page = await browser.newPage()
+      await page.setContent(html)
+      const pdf = await page.pdf({format: 'A4'})
+
+      return pdf
     } catch (error) {
       console.log('error', error)
       throw new HttpException(
         'Error generating PDF',
         HttpStatus.INTERNAL_SERVER_ERROR
       )
+    } finally {
+      if (browser) {
+        await browser.close()
+      }
     }
   }
 }
