@@ -5,8 +5,16 @@ import * as bodyParser from 'body-parser'
 import {Request, Response, NextFunction} from 'express'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create(AppModule, {cors: true})
 
+  app.enableCors({
+    origin: ['https://at-gpt-frontend.vercel.app'],
+    allowedHeaders: ['Accept', 'Content-Type'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    credentials: true
+  })
   // Middleware personalizado para habilitar CORS
   const allowCors = (req: Request, res: Response, next: NextFunction) => {
     const allowedOrigins = ['https://at-gpt-frontend.vercel.app']
