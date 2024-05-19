@@ -17,7 +17,8 @@ import {Idioma} from './entities/idioma.entity'
 import {createLanguageUseCase} from './use-cases/create-language-use-case'
 import {assignLanguageToPersonUseCase} from './use-cases/assign-language-use-case'
 import * as Handlebars from 'handlebars'
-import * as puppeteer from 'puppeteer'
+import chromium from 'chrome-aws-lambda'
+import * as puppeteer from 'puppeteer-core'
 import {readFileSync} from 'fs'
 import {join} from 'path'
 
@@ -121,17 +122,28 @@ export class AtGptDatabaseService implements OnModuleInit {
       skills: persona.skills.map((skill) => skill.nombre),
       idiomas: persona.idiomas.map((idioma) => idioma.idioma)
     }
-    try {
-      const html = template(data)
+    const html = template(data)
+    let browser = null
 
-      const browser = await puppeteer.launch()
+    try {
+      // Lanzar el navegador usando chrome-aws-lambda
+      browser = await puppeteer.launch({
+        args: chromium.args,
+        executablePath: await chromium.executablePath,
+        headless: chromium.headless
+      })
+
       const page = await browser.newPage()
       await page.setContent(html)
       const pdf = await page.pdf({format: 'A4'})
-      await browser.close()
+
       return pdf
     } catch (error) {
       console.log('error', error)
+    } finally {
+      if (browser) {
+        await browser.close()
+      }
     }
   }
 }
