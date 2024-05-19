@@ -15,7 +15,11 @@ async function bootstrap() {
   // the next two lines did the trick
   app.use(bodyParser.json({limit: '50mb'}))
   app.use(bodyParser.urlencoded({limit: '50mb', extended: true}))
-  app.enableCors()
+  app.enableCors({
+    origin: 'https://at-gpt-frontend.vercel.app',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true
+  })
 
   await app.listen(3000)
 }
