@@ -18,7 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "postinstall": "puppeteer-core install"
+    "postinstall": "puppeteer install"
   },
   "dependencies": {
     "@langchain/community": "0.0.53",
@@ -43,6 +43,7 @@
     "openai": "4.24.1",
     "pdf-lib": "1.17.1",
     "pdf-parse": "1.1.1",
+    "puppeteer": "19.11.1",
     "puppeteer-core": "10.4.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
