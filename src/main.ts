@@ -18,7 +18,7 @@ async function bootstrap() {
   app.enableCors({
     origin: 'https://at-gpt-frontend.vercel.app',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true
+    allowedHeaders: 'Content-Type, Accept'
   })
 
   await app.listen(3000)
