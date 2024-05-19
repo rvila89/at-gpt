@@ -13,6 +13,7 @@ import {FileInterceptor} from '@nestjs/platform-express'
 import {diskStorage} from 'multer'
 import {Persona} from './entities/persona.entity'
 import type {Response} from 'express'
+import {join} from 'path'
 
 @ApiTags('AI')
 @Controller('at-gpt')
@@ -26,7 +27,10 @@ export class AtGptDatabaseController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './generated/uploads/cv',
+        destination: (req, file, cb) => {
+          const uploadPath = join('/tmp', 'generated', 'uploads', 'cv')
+          cb(null, uploadPath)
+        },
         filename: (req, file, callback) => {
           callback(null, `${file.originalname}`)
         }

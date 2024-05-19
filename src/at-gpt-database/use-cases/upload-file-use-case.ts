@@ -11,15 +11,13 @@ export const uploadFileUseCase = async (
   file: Express.Multer.File,
   llm: ChatOpenAI
 ) => {
-  const filePath = path.resolve(
-    __dirname,
-    '../../../../generated/uploads/cv',
-    `${file.filename}`
-  )
+  const tempDir = path.join('/tmp', 'generated', 'uploads', 'cv')
+  const filePath = path.join(tempDir, file.filename)
   // Check if the file exists
   if (!fs.existsSync(filePath)) {
     throw new NotFoundException('File does not exist.')
   }
+
   const loader = new PDFLoader(filePath, {
     splitPages: false
   })
