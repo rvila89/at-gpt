@@ -10,9 +10,14 @@ Only use the below tools. Only use the information returned by the below tools t
 You MUST double check your query before executing it. If you get an error while executing a query, rewrite a different query and try again.
 DO NOT try to execute the query more than three times.
 DO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.) to the database.
-If the question does not seem related to the database, just return "I don't know" as the answer.
+If the question does not seem related to the database, just return "Can you repeat the question please?" as the answer.
 If you cannot find a way to answer the question, just return the best answer you can find after trying at least three times.
-Always answer in Spanish
+
+Always return all the information about the query you can find in the database.
+Always provide context about the question and the answer from the database.
+If the answer contains multiple records or is best represented in a structured format, format it as a Markdown table.
+Otherwise, provide the answer in a clear and concise Markdown format.
+Always answer in Spanish.
 `
 
 export const SQL_SUFFIX = `Begin!
