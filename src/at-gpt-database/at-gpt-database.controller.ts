@@ -25,12 +25,32 @@ export class AtGptDatabaseController {
   @ApiOperation({
     summary: 'Give pdf file, it will extract data and insert into DB'
   })
+  /*
+  To deploy in vercel
+
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
         destination: (req, file, cb) => {
           const uploadPath = join('/tmp', 'generated', 'uploads', 'cv')
           fs.mkdirSync(uploadPath, {recursive: true})
+          cb(null, uploadPath)
+        },
+        filename: (req, file, callback) => {
+          callback(null, `${file.originalname}`)
+        }
+      })
+    })
+  )
+  */
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: (req, file, cb) => {
+          const uploadPath = join(__dirname, '..', 'generated', 'uploads', 'cv')
+          if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, {recursive: true})
+          }
           cb(null, uploadPath)
         },
         filename: (req, file, callback) => {

@@ -2,12 +2,14 @@ import {NestFactory} from '@nestjs/core'
 import {AppModule} from './app.module'
 import {ValidationPipe} from '@nestjs/common'
 import * as bodyParser from 'body-parser'
-import {Request, Response, NextFunction} from 'express'
+//import {Request, Response, NextFunction} from 'express'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {cors: true})
 
-  app.enableCors({
+  /*
+    To deploy into vercel
+    app.enableCors({
     origin: ['https://at-gpt-frontend.vercel.app'],
     allowedHeaders: ['Accept', 'Content-Type'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
@@ -41,6 +43,7 @@ async function bootstrap() {
 
   // Usa el middleware personalizado para todas las rutas
   app.use(allowCors)
+  */
 
   app.useGlobalPipes(
     new ValidationPipe({

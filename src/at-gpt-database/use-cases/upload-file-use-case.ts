@@ -11,8 +11,8 @@ export const uploadFileUseCase = async (
   file: Express.Multer.File,
   llm: ChatOpenAI
 ) => {
-  const tempDir = path.join('/tmp', 'generated', 'uploads', 'cv')
-  const filePath = path.join(tempDir, file.filename)
+  const uploadDir = path.join(__dirname, '..', 'generated', 'uploads', 'cv')
+  const filePath = path.join(uploadDir, file.filename)
   // Check if the file exists
   if (!fs.existsSync(filePath)) {
     throw new NotFoundException('File does not exist.')

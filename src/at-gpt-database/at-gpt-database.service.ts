@@ -19,8 +19,7 @@ import {assignLanguageToPersonUseCase} from './use-cases/assign-language-use-cas
 import * as Handlebars from 'handlebars'
 import {readFileSync} from 'fs'
 import {join} from 'path'
-import * as puppeteer from 'puppeteer-core'
-import * as chromium from 'chrome-aws-lambda'
+import * as puppeteer from 'puppeteer'
 
 @Injectable()
 export class AtGptDatabaseService implements OnModuleInit {
@@ -127,13 +126,12 @@ export class AtGptDatabaseService implements OnModuleInit {
 
     try {
       const browser = await puppeteer.launch({
-        args: chromium.args,
-        executablePath: await chromium.executablePath,
-        headless: chromium.headless
+        headless: true // Ejecutar en modo sin cabeza
       })
+
       const page = await browser.newPage()
       await page.setContent(html, {waitUntil: 'networkidle0'})
-      const pdfBuffer = await page.pdf({format: 'A4'})
+      const pdfBuffer = await page.pdf({format: 'a4'}) // "a4" en minúsculas
       await browser.close()
 
       return pdfBuffer
