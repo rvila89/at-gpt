@@ -88,12 +88,20 @@
           <div style='color: #e62e8b' class="section-title">EXPERIENCIA PROFESIONAL</div>
           {{#each experiencia}}
           <div class="sub-section">
-              <h3 style='color: #e62e8b'>{{cliente}}</h3>
-              <p><strong>Proyecto:</strong> {{proyecto}}</p>
+              <p><strong>{{fechaIni}} - {{fechaFin}}</strong> </p>
+              <p><strong>Compañia:</strong> {{empresa}}</p>
+              <p><strong>Posición:</strong> {{posicion}}</p>
               <p><strong>Funciones:</strong> {{funciones}}</p>
-              <p><strong>Herramientas:</strong> {{herramientas}}</p>
           </div>
           {{/each}}
+      </div>
+      <div class="section">
+          <div style='color: #e62e8b'class="section-title">FORMACIÓN</div>
+          <ul>
+              {{#each educacion}}
+              <li>{{fechaFin}}: {{institucion}} - {{tipo}}</li>
+              {{/each}}
+          </ul>
       </div>
       <div class="section">
           <div style='color: #e62e8b'class="section-title">IDIOMAS</div>

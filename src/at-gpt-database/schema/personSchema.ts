@@ -20,39 +20,19 @@ export const personSchema = z
       .array(
         z.object({
           position: z.string().describe('Position held'),
+          description: z.string().optional().describe('Project description'),
           company: z.string().describe('Company name'),
           dateStart: z.string().optional().describe('Start date of employment'),
           dateEnd: z.string().optional().describe('End date of employment'),
           client: z.string().optional().describe('Client name'),
-          projects: z
-            .array(
-              z.object({
-                name: z.string().describe('Project name'),
-                description: z
-                  .string()
-                  .optional()
-                  .describe('Project description'),
-                date: z.string().optional().describe('Working period'),
-                technologies_tools: z
-                  .array(z.string())
-                  .optional()
-                  .describe('Technologies and tools used')
-              })
-            )
-            .optional()
-            .describe('Projects involved'),
-          skills: z
+          technologies_tools: z
             .array(z.string())
             .optional()
-            .describe('List of responsibilities'),
-          methodology: z
-            .array(z.string())
-            .optional()
-            .describe('Methodologies followed')
+            .describe('Technologies and tools used')
         })
       )
       .optional()
-      .describe('Professional experience'),
+      .describe('Projects involved'),
     education: z
       .array(
         z.object({

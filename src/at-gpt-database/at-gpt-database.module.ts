@@ -6,10 +6,20 @@ import {Persona} from './entities/persona.entity'
 import {Educacion} from './entities/educacion.entity'
 import {Idioma} from './entities/idioma.entity'
 import {Skill} from './entities/skill.entity'
+import {Trabajo} from './entities/trabajo.entity'
 
 @Module({
   controllers: [AtGptDatabaseController],
   providers: [AtGptDatabaseService],
-  imports: [TypeOrmModule.forFeature([Persona, Educacion, Idioma, Skill])]
+  imports: [
+    TypeOrmModule.forFeature([
+      Persona,
+      Educacion,
+      Idioma,
+      Skill,
+      Trabajo,
+      Educacion
+    ])
+  ]
 })
 export class AtGptDatabaseModule {}

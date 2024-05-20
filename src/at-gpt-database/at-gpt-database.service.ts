@@ -20,6 +20,11 @@ import * as Handlebars from 'handlebars'
 import {readFileSync} from 'fs'
 import {join} from 'path'
 import * as puppeteer from 'puppeteer'
+import {createJobUseCase} from './use-cases/create-job-use-case'
+import {Trabajo} from './entities/trabajo.entity'
+import {formatFecha} from './utils/utils'
+import {createFormacionUseCase} from './use-cases/create-formacion-use-case'
+import {Educacion} from './entities/educacion.entity'
 
 @Injectable()
 export class AtGptDatabaseService implements OnModuleInit {
@@ -28,7 +33,10 @@ export class AtGptDatabaseService implements OnModuleInit {
   constructor(
     @InjectRepository(Persona) private personaRepository: Repository<Persona>,
     @InjectRepository(Skill) private skillRepository: Repository<Skill>,
-    @InjectRepository(Idioma) private languageRepository: Repository<Idioma>
+    @InjectRepository(Idioma) private languageRepository: Repository<Idioma>,
+    @InjectRepository(Trabajo) private jobRepository: Repository<Trabajo>,
+    @InjectRepository(Educacion)
+    private educacionRepository: Repository<Educacion>
   ) {}
 
   async onModuleInit() {
@@ -78,6 +86,26 @@ export class AtGptDatabaseService implements OnModuleInit {
           persona.email
         )
       }
+      const jobs = extract.professional_experience.map((experience) => ({
+        empresa: experience.company,
+        fechaini: new Date(experience.dateStart),
+        fechafin: new Date(experience.dateEnd),
+        cargo: experience.position,
+        resumen: experience.description,
+        personaId: persona.id_persona
+      }))
+      for (const job of jobs) {
+        await createJobUseCase(this.jobRepository, job)
+      }
+      const formaciones = extract.education.map((education) => ({
+        institucion: education.institution,
+        fechafin: new Date(education.year),
+        tipo: education.degree,
+        personaId: persona.id_persona
+      }))
+      for (const formacion of formaciones) {
+        await createFormacionUseCase(this.educacionRepository, formacion)
+      }
 
       return persona
     } catch (error) {
@@ -87,14 +115,14 @@ export class AtGptDatabaseService implements OnModuleInit {
 
   async findAllPeople(): Promise<Persona[]> {
     return this.personaRepository.find({
-      relations: ['skills', 'idiomas', 'educaciones']
+      relations: ['skills', 'idiomas', 'educaciones', 'trabajos']
     })
   }
 
   async generatePdf(idPersona: number): Promise<Buffer> {
     const persona = await this.personaRepository.findOne({
       where: {id_persona: idPersona},
-      relations: ['idiomas', 'skills']
+      relations: ['idiomas', 'skills', 'trabajos', 'educaciones']
     })
 
     if (!persona) {
@@ -113,14 +141,18 @@ export class AtGptDatabaseService implements OnModuleInit {
       email: persona.email,
       initials: persona.nombre.charAt(0) + persona.apellidos.charAt(0),
       resumen: persona.summary,
-      experiencia: [
-        {
-          cliente: 'Cliente XXX',
-          proyecto: 'Proyecto XXX',
-          funciones: 'Aquí están descritas las funciones XXX del soci@',
-          herramientas: 'XXX, XXX'
-        }
-      ],
+      experiencia: persona.trabajos.map((experience) => ({
+        fechaIni: formatFecha(experience.fechaini),
+        fechaFin: formatFecha(experience.fechafin),
+        empresa: experience.empresa,
+        posicion: experience.cargo,
+        funciones: experience.resumen
+      })),
+      educacion: persona.educaciones.map((educacion) => ({
+        fechaFin: formatFecha(educacion.fechafin),
+        institucion: educacion.institucion,
+        tipo: educacion.tipo
+      })),
       skills: persona.skills.map((skill) => skill.nombre),
       idiomas: persona.idiomas.map((idioma) => idioma.idioma)
     }

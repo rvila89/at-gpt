@@ -9,6 +9,7 @@ import {
 import {Idioma} from './idioma.entity'
 import {Skill} from './skill.entity'
 import {Educacion} from './educacion.entity' // Importa la entidad Educacion
+import {Trabajo} from './trabajo.entity'
 
 @Entity()
 export class Persona {
@@ -30,8 +31,10 @@ export class Persona {
   @Column({length: 500, nullable: true})
   summary: string
 
-  @OneToMany(() => Educacion, (educacion) => educacion.persona) // Define la relación con Educacion
-  educaciones: Educacion[] // Define la propiedad educaciones
+  @OneToMany(() => Educacion, (educacion) => educacion.persona)
+  educaciones: Educacion[]
+  @OneToMany(() => Trabajo, (trabajo) => trabajo.persona)
+  trabajos: Trabajo[]
 
   @ManyToMany(() => Idioma, (idioma) => idioma.persona)
   @JoinTable({
