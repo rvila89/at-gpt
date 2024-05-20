@@ -19,7 +19,8 @@ import {assignLanguageToPersonUseCase} from './use-cases/assign-language-use-cas
 import * as Handlebars from 'handlebars'
 import {readFileSync} from 'fs'
 import {join} from 'path'
-import * as htmlPdf from 'html-pdf-node'
+import * as puppeteer from 'puppeteer-core'
+import * as chromium from 'chrome-aws-lambda'
 
 @Injectable()
 export class AtGptDatabaseService implements OnModuleInit {
@@ -95,7 +96,7 @@ export class AtGptDatabaseService implements OnModuleInit {
     })
 
     if (!persona) {
-      throw new Error('Persona not found')
+      throw new Error('Persona no encontrada')
     }
 
     const templateHtml = readFileSync(
@@ -108,13 +109,13 @@ export class AtGptDatabaseService implements OnModuleInit {
       nombre: persona.nombre,
       apellido: persona.apellidos,
       email: persona.email,
-      initials: persona.nombre.charAt(0) + persona.apellidos.charAt(0),
+      iniciales: persona.nombre.charAt(0) + persona.apellidos.charAt(0),
       resumen: 'Resumen ejecutivo del usuario',
       experiencia: [
         {
           cliente: 'Cliente XXX',
           proyecto: 'Proyecto XXX',
-          funciones: 'Aquí estan descritas las funciones XXX del soci@',
+          funciones: 'Aquí están descritas las funciones XXX del soci@',
           herramientas: 'XXX, XXX'
         }
       ],
@@ -123,16 +124,23 @@ export class AtGptDatabaseService implements OnModuleInit {
     }
 
     const html = template(data)
-    const file = {content: html}
-    const options = {format: 'A4'}
 
     try {
-      const pdfBuffer = await htmlPdf.generatePdf(file, options)
+      const browser = await puppeteer.launch({
+        args: chromium.args,
+        executablePath: await chromium.executablePath,
+        headless: chromium.headless
+      })
+      const page = await browser.newPage()
+      await page.setContent(html, {waitUntil: 'networkidle0'})
+      const pdfBuffer = await page.pdf({format: 'A4'})
+      await browser.close()
+
       return pdfBuffer
     } catch (error) {
       console.log('error', error)
       throw new HttpException(
-        'Error generating PDF',
+        'Error generando el PDF',
         HttpStatus.INTERNAL_SERVER_ERROR
       )
     }
