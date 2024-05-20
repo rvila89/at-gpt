@@ -25,6 +25,27 @@ export class AtGptDatabaseController {
   @ApiOperation({
     summary: 'Give pdf file, it will extract data and insert into DB'
   })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: (req, file, cb) => {
+          const uploadPath = join(__dirname, '..', 'generated', 'uploads', 'cv')
+          console.log('up', uploadPath)
+          if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, {recursive: true})
+          }
+          cb(null, uploadPath)
+        },
+        filename: (req, file, callback) => {
+          callback(null, `${file.originalname}`)
+        }
+      })
+    })
+  )
+  async uploadPdf(@UploadedFile() file: Express.Multer.File) {
+    console.log('f', file)
+    return this.atGptDatabaseService.uploadFile(file)
+  }
   /*
   To deploy in vercel
 
@@ -43,25 +64,6 @@ export class AtGptDatabaseController {
     })
   )
   */
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: (req, file, cb) => {
-          const uploadPath = join(__dirname, '..', 'generated', 'uploads', 'cv')
-          if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, {recursive: true})
-          }
-          cb(null, uploadPath)
-        },
-        filename: (req, file, callback) => {
-          callback(null, `${file.originalname}`)
-        }
-      })
-    })
-  )
-  async uploadPdf(@UploadedFile() file: Express.Multer.File) {
-    return this.atGptDatabaseService.uploadFile(file)
-  }
 
   @Get('personas')
   async findAll(): Promise<Persona[]> {
@@ -81,7 +83,6 @@ export class AtGptDatabaseController {
       'Content-Disposition': 'attachment; filename=cv.pdf',
       'Content-Length': pdfBuffer.length
     })
-    console.log('pdf', pdfBuffer)
     res.end(pdfBuffer)
   }
 }

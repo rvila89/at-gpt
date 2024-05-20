@@ -27,6 +27,9 @@ export class Persona {
   @Column({length: 15})
   telefono: string
 
+  @Column({length: 500, nullable: true})
+  summary: string
+
   @OneToMany(() => Educacion, (educacion) => educacion.persona) // Define la relación con Educacion
   educaciones: Educacion[] // Define la propiedad educaciones
 

@@ -5,49 +5,49 @@
     <title>CV</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: Roboto;
             margin: 0;
-            padding: 0;
+            padding: 52px 72px;
             box-sizing: border-box;
+            margin-right: 10px;
+            margint-left: 10px;
         }
         header {
-            background: #f8f8f8;
-            padding: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 20px;
         }
         header .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #808080;
+            font-size: 26px;
+            font-weight: 900;
+            color: grey !important;
         }
         header .contact {
-          font-size: 40px;
-          color: #e62e8b;
+            font-size: 44px;
+            font-weight: 100;
+            font-family: 'Times New Roman', Times, serif;
+            color: #e62e8b !important;
+            margin-top: 0px
         }
-        h1 {
-            font-size: 24px;
-            color: #e62e8b;
-            margin: 20px 0;
-        }
-        h2 {
-            font-size: 20px;
-            color: #e62e8b;
+        h1, h2, h3 {
+            color: #e62e8b !important;
             margin: 10px 0;
         }
         p {
             font-size: 14px;
-            color: #333;
+            color: grey;
             line-height: 1.5;
+            margin-left: 40px;
+            text-align: justify;
         }
         .section {
             margin-bottom: 20px;
         }
         .section-title {
             font-size: 18px;
-            font-weight: bold;
-            color: #e62e8b;
+            font-weight: 900;
+            color: #e62e8b !important;
             margin-bottom: 10px;
             padding-bottom: 5px;
         }
@@ -57,7 +57,19 @@
         .sub-section-title {
             font-size: 16px;
             font-weight: bold;
-            color: #333;
+            color: #333 !important;
+        }
+        ul {
+            list-style-type: disc;
+            padding: 0;
+            margin-left: 40px;
+        }
+        li {
+            margin-bottom: 5px;
+            color: grey;
+        }
+        li::marker {
+            color: #e62e8b !important;
         }
     </style>
 </head>
@@ -66,17 +78,17 @@
       <div class="logo">{{initials}} {{nombre}} {{apellido}}</div>
       <div class="contact">atmira</div>
   </header>
-  <div style="padding: 20px;">
-      <p>{{email}}</p>
+  <div>
+      <p style='margin-left: 0px; margin-top: 10px;'>{{email}}</p>
       <div class="section">
-          <div class="section-title">RESUMEN EJECUTIVO</div>
+          <div style='color: #e62e8b'class="section-title">RESUMEN EJECUTIVO</div>
           <p>{{resumen}}</p>
       </div>
       <div class="section">
-          <div class="section-title">EXPERIENCIA PROFESIONAL</div>
+          <div style='color: #e62e8b' class="section-title">EXPERIENCIA PROFESIONAL</div>
           {{#each experiencia}}
           <div class="sub-section">
-              <h2>{{cliente}}</h2>
+              <h3 style='color: #e62e8b'>{{cliente}}</h3>
               <p><strong>Proyecto:</strong> {{proyecto}}</p>
               <p><strong>Funciones:</strong> {{funciones}}</p>
               <p><strong>Herramientas:</strong> {{herramientas}}</p>
@@ -84,7 +96,7 @@
           {{/each}}
       </div>
       <div class="section">
-          <div class="section-title">IDIOMAS</div>
+          <div style='color: #e62e8b'class="section-title">IDIOMAS</div>
           <ul>
               {{#each idiomas}}
               <li>{{this}}</li>

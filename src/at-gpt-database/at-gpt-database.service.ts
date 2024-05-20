@@ -35,7 +35,7 @@ export class AtGptDatabaseService implements OnModuleInit {
     this.llm = new ChatOpenAI({
       openAIApiKey: process.env.OPENAI_API_KEY,
       temperature: 0,
-      modelName: 'gpt-4'
+      modelName: 'gpt-4o'
     })
   }
 
@@ -47,7 +47,8 @@ export class AtGptDatabaseService implements OnModuleInit {
         nombre: extract.name,
         apellidos: extract.lastName,
         email: extract.email,
-        telefono: extract.phone ? extract.phone : 'No disponible'
+        telefono: extract.phone ? extract.phone : 'No disponible',
+        summary: extract.summary
       })
       const skills = extract.skills.technical.map((skill) => ({
         nombre: skill,
@@ -85,7 +86,9 @@ export class AtGptDatabaseService implements OnModuleInit {
   }
 
   async findAllPeople(): Promise<Persona[]> {
-    return this.personaRepository.find()
+    return this.personaRepository.find({
+      relations: ['skills', 'idiomas', 'educaciones']
+    })
   }
 
   async generatePdf(idPersona: number): Promise<Buffer> {
@@ -105,11 +108,11 @@ export class AtGptDatabaseService implements OnModuleInit {
     const template = Handlebars.compile(templateHtml)
 
     const data = {
-      nombre: persona.nombre,
-      apellido: persona.apellidos,
+      nombre: persona.nombre.toUpperCase(),
+      apellido: persona.apellidos.toUpperCase(),
       email: persona.email,
-      iniciales: persona.nombre.charAt(0) + persona.apellidos.charAt(0),
-      resumen: 'Resumen ejecutivo del usuario',
+      initials: persona.nombre.charAt(0) + persona.apellidos.charAt(0),
+      resumen: persona.summary,
       experiencia: [
         {
           cliente: 'Cliente XXX',
@@ -126,12 +129,16 @@ export class AtGptDatabaseService implements OnModuleInit {
 
     try {
       const browser = await puppeteer.launch({
-        headless: true // Ejecutar en modo sin cabeza
+        headless: true, // Ejecutar en modo sin cabeza
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
       })
 
       const page = await browser.newPage()
       await page.setContent(html, {waitUntil: 'networkidle0'})
-      const pdfBuffer = await page.pdf({format: 'a4'}) // "a4" en minúsculas
+      const pdfBuffer = await page.pdf({
+        format: 'a4', // "a4" en minúsculas
+        printBackground: true // Asegúrate de que el fondo se imprima
+      })
       await browser.close()
 
       return pdfBuffer

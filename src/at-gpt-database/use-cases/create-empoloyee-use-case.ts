@@ -6,13 +6,14 @@ interface Options {
   apellidos: string
   email: string
   telefono: string
+  summary: string
 }
 
 export const createEmployeeUseCase = async (
   personaRepository: Repository<Persona>,
   persona: Options
 ) => {
-  const {email, nombre, apellidos, telefono} = persona
+  const {email, nombre, apellidos, telefono, summary} = persona
 
   const existingPersona = await personaRepository.findOne({where: {email}})
 
@@ -24,6 +25,7 @@ export const createEmployeeUseCase = async (
     nombre,
     apellidos,
     email,
-    telefono
+    telefono,
+    summary
   })
 }
